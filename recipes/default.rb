@@ -74,10 +74,14 @@ template "/etc/default/supervisor" do
   only_if { platform_family?("debian") }
 end
 
-init_template_dir = value_for_platform_family(
-  ["rhel", "fedora", "centos", "amazon"] => "rhel",
-  "debian" => "debian"
-)
+case node['platform_family']
+when 'amazon', 'fedora', 'rhel'
+  init_template_dir = 'rhel'
+  bin_path = '/usr/bin'
+when 'debian'
+  init_template_dir = 'debian'
+  bin_path = '/usr/local/bin'
+end
 
 case node['platform']
 when "amazon", "centos", "debian", "fedora", "redhat", "ubuntu", "raspbian"
@@ -87,9 +91,7 @@ when "amazon", "centos", "debian", "fedora", "redhat", "ubuntu", "raspbian"
     group "root"
     mode "755"
     variables({
-      # TODO: use this variable in the debian platform-family template
-      # instead of altering the PATH and calling "which supervisord".
-      :supervisord => "/usr/local/bin/supervisord"
+      :supervisord => "#{bin_path}/supervisord"
     })
   end
 
