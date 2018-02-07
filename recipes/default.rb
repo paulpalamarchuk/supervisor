@@ -19,7 +19,8 @@
 
 # Install
 python_runtime 'supervisor' do
-  version '2'
+  version  '2'
+  provider :system
 end
 
 # foodcritic FC023: we prefer not having the resource on non-smartos
@@ -29,9 +30,8 @@ if platform_family?("smartos")
   end
 end
 
-python_package "supervisor" do
-  action :upgrade
-  python 'supervisor'
+python_package 'supervisor' do
+  action  :upgrade
   version node['supervisor']['version'] if node['supervisor']['version']
 end
 
